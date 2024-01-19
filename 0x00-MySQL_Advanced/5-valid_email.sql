@@ -1,12 +1,15 @@
-DELIMITER //
-
-CREATE TRIGGER decrease_item_quantity
-AFTER INSERT ON orders
+-- this creates a trigger that resets the attribute valid_email
+-- only when the email has been changed.
+DROP TRIGGER IF EXISTS validate_email;
+DELIMITER $$
+CREATE TRIGGER validate_email
+BEFORE UPDATE ON users
 FOR EACH ROW
 BEGIN
-    UPDATE items
-    SET quantity = quantity - NEW.number
-    WHERE name = NEW.item_name;
-END//
-
+    IF OLD.email != NEW.email THEN
+        SET NEW.valid_email = 0;
+    ELSE
+        SET NEW.valid_email = NEW.valid_email;
+    END IF;
+END $$
 DELIMITER ;
